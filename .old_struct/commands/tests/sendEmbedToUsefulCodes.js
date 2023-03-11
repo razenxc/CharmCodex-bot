@@ -13,13 +13,19 @@ module.exports = {
         .addStringOption(option => 
             option.setName('title')
                 .setDescription('Введіть заголовк')
-                .setRequired(true)),
+                .setRequired(true))
+		.addStringOption(option => 
+			option.setName('code')
+				.setDescription('Введіть код')
+				.setRequired(true)),
 		
 			async execute(interaction) {
 				const sendUsefulCodeEmd = new EmbedBuilder()
 					.setAuthor({ name: interaction.user.username, iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
 					.setColor(interaction.options.getString('color'))
 					.setTitle(interaction.options.getString('title'))
+					.setDescription(interaction.options.getString('code'))
+					.setFooter({ text: 'Some footer text here'});
 					
 
 				// channel.send({ embeds: [exampleEmbed] });

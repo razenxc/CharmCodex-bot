@@ -1,33 +1,38 @@
-const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const { SlashCommandBuilder, ActionRowBuilder, Events, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+
+const modal = new ModalBuilder()
+    .setTitle('Title')
+    .setCustomId('modal');
+
+const name = new TextInputBuilder()
+    .setCustomId('name')
+    .setRequired(true)
+    .setLabel('Enter name')
+    .setStyle(TextInputStyle.Short);
+
+const about = new TextInputBuilder()
+    .setCustomId('about')
+    .setRequired(true)
+    .setLabel('Write about you')
+    .setStyle(TextInputStyle.Paragraph);
+
+const firstActionRow = new ActionRowBuilder().addComponents(name);
+const secondActionRow = new ActionRowBuilder().addComponents(about);
+
+modal.addComponents(firstActionRow, secondActionRow);
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('stringembed')
-        .setDescription('Запросить строку и отправить её в виде эмбеда'),
-        // .addStringOption(option => 
-        //     option.setName('строка')
-        //         .setDescription('Введите строку')
-        //         .setRequired(true)),
+        .setName('test')
+        .setDescription('test'),
     async execute(interaction) {
-        // const string = interaction.options.getString('строка');
-        const exampleEmbed = new EmbedBuilder()
-	.setColor(0x0099FF)
-	.setTitle('Some title')
-	.setURL('https://discord.js.org/')
-	.setAuthor({ name: 'Some name', iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
-	.setDescription('Some description here')
-	.setThumbnail('https://i.imgur.com/AfFp7pu.png')
-	.addFields(
-		{ name: 'Regular field title', value: 'Some value here' },
-		{ name: '\u200B', value: '\u200B' },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-	)
-	.addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-	.setImage('https://i.imgur.com/AfFp7pu.png')
-	.setTimestamp()
-	.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+        await interaction.showModal(modal);
 
-await interaction.reply({ embeds: [exampleEmbed] });
-    },
+        interaction.client.on(Events.InteractionCreate, async interaction => {
+            if (!interaction.isModalSubmit()) return;
+            const userName = interaction.fields.getTextInputValue('name');
+            const userAbout = interaction.fields.getTextInputValue('about');
+            await interaction.reply(`Username: ${userName}, About: ${userAbout}`);
+        });
+    }
 };
