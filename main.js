@@ -1,57 +1,116 @@
 require('dotenv').config();
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-
+const { EmbedBuilder } = require('@discordjs/builders');
+const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.commands = new Collection();
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user.tag}!`);
+});
 
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+// Commands
+const { ActionRowBuilder, Events, ModalBuilder, TextInputBuilder, TextInputStyle, WebhookClient } = require('discord.js');
+// 
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
 
-for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file);
-	const command = require(filePath);
-	
-	if ('data' in command && 'execute' in command) {
-		client.commands.set(command.data.name, command);
-	} else {
-		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-	}
-}
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('Pong!');
+  }
+});
 
-// Interaction Create
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+    if (!interaction.isChatInputCommand()) return;
+    // 
+    const modal = new ModalBuilder()
+    .setTitle('Title')
+    .setCustomId('modal');
 
-	const command = interaction.client.commands.get(interaction.commandName);
+    const name = new TextInputBuilder()
+        .setCustomId('name')
+        .setRequired(true)
+        .setLabel('Enter name')
+        .setStyle(TextInputStyle.Short);
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
+    const about = new TextInputBuilder()
+        .setCustomId('about')
+        .setRequired(true)
+        .setLabel('Write about you')
+        .setStyle(TextInputStyle.Paragraph);
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
+    const firstActionRow = new ActionRowBuilder().addComponents(name);
+    const secondActionRow = new ActionRowBuilder().addComponents(about);
+
+    modal.addComponents(firstActionRow, secondActionRow);
+    // 
+    if (interaction.commandName === 'test') {
+        await interaction.showModal(modal);
+    }
+}); client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isModalSubmit()) return;
+	if (interaction.customId === 'modal') {
+		await interaction.reply({ content: 'Your submission was received successfully!' });
 	}
 });
 
-// Interaction Modal Submit
-// client.on(Events.InteractionCreate, async interaction => {
-	
-// })
+client.on(Events.InteractionCreate, async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+    // 
+    const modal = new ModalBuilder()
+        .setCustomId('publishCodeWindow')
+        .setTitle('Публікація корисного коду')
 
-client.once(Events.ClientReady, c => {
-	console.log(`Залогінений як ${client.user.tag}!`);
-	client.user.setPresence({ activities: [{ name: `Сгорел` }] });
+    const embedColorInput = new TextInputBuilder()
+        .setCustomId('embedColorInput')
+        .setLabel('Введіть колір ембеду в формати RRGGBB')
+        .setMinLength(6)
+        .setMaxLength(6)
+        .setStyle(TextInputStyle.Short);
+    const embedCodeTypeInput = new TextInputBuilder()
+        .setCustomId('embedCodeTypeInput')
+        .setLabel('Введіть тип код')
+        .setMaxLength(4)
+        .setStyle(TextInputStyle.Short);
+    const embedTitleInput = new TextInputBuilder()
+        .setCustomId('embedTitleInput')
+        .setLabel('Введіть заголовок')
+        .setStyle(TextInputStyle.Short);
+    const embedDescriptionInput = new TextInputBuilder()
+        .setCustomId('embedDescriptionInput')
+        .setLabel('Введіть код')
+        .setStyle(TextInputStyle.Paragraph);
+    const embedFooterInput = new TextInputBuilder()
+        .setCustomId('embedFooterInput')
+        .setLabel('Введіть теги')
+        .setStyle(TextInputStyle.Short);
+
+    const firstRow = new ActionRowBuilder().addComponents(embedColorInput);
+    const secondRow = new ActionRowBuilder().addComponents(embedCodeTypeInput);
+    const thirdRow = new ActionRowBuilder().addComponents(embedTitleInput);
+    const fourthRow = new ActionRowBuilder().addComponents(embedDescriptionInput);
+    const fifthRow = new ActionRowBuilder().addComponents(embedFooterInput);
+
+    modal.addComponents(firstRow, secondRow, thirdRow, fourthRow, fifthRow);
+
+    if (interaction.commandName === 'publishcode') {
+        await interaction.showModal(modal);
+    }
+}); client.on(Events.InteractionCreate, async interaction => {
+    if (!interaction.isModalSubmit() || interaction.customId !== 'publishCodeWindow') return;
+    const codeDescription = interaction.fields.getTextInputValue('embedDescriptionInput')
+    const codeType = interaction.fields.getTextInputValue('embedCodeTypeInput')
+    const publishCodeEmbed = new EmbedBuilder()
+        .setAuthor({ name: interaction.user.username, iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
+        .setColor(Number('0x' + interaction.fields.getTextInputValue('embedColorInput')))
+        .setTitle(interaction.fields.getTextInputValue('embedTitleInput'))
+        .setDescription(`\`\`\`${codeType}\n${codeDescription}\n\`\`\``)
+        .setFooter({ text: interaction.fields.getTextInputValue('embedFooterInput') });
+    const webhookId = process.env.GUILD_USEFUL_CODE_WEBHOOK_ID;
+    const webhookToken = process.env.GUILD_USEFUL_CODE_WEBHOOK_TOKEN;
+    await new WebhookClient({ id: webhookId, token: webhookToken })
+        .send({ embeds: [publishCodeEmbed] });
 });
 
+
+
+// Login client
 client.login(process.env.DISCORD_BOT_TOKEN);
