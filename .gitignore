@@ -4,3 +4,4 @@ node_modules
 config.json
 123.js
 .replit
+replit.nix
