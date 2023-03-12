@@ -22,6 +22,7 @@ const client = new Client({
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setPresence({ activities: [{ name: `node.js`}] });
 });
 
 client.on(Events.InteractionCreate, async interaction => {
