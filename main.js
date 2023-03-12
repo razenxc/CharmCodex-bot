@@ -24,7 +24,8 @@ client.on('ready', () => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+    try {
+        if (!interaction.isChatInputCommand()) return;
 	switch (interaction.commandName) {
 		case 'ping':
 			await interaction.reply('Pong!');
@@ -84,10 +85,14 @@ client.on(Events.InteractionCreate, async interaction => {
 			}
 			break;
 	}
+    } catch (error) {
+        console.error(error)
+    }
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isModalSubmit()) return;
+    try {
+        if (!interaction.isModalSubmit()) return;
 	switch (interaction.customId) {
 		case 'test':
 			await interaction.reply({
@@ -128,6 +133,9 @@ client.on(Events.InteractionCreate, async interaction => {
 		default:
 			console.log(`Unknown modal ID: '${interaction.customId}'`);
 	}
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 // Login client
