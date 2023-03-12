@@ -1,3 +1,4 @@
+require('./123').start()
 require('dotenv').config();
 
 const { EmbedBuilder } = require('@discordjs/builders');
