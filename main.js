@@ -10,6 +10,7 @@ const {
 	TextInputBuilder,
 	TextInputStyle,
 	WebhookClient,
+    Message
 } = require('discord.js');
 
 const client = new Client({
@@ -28,62 +29,58 @@ client.on(Events.InteractionCreate, async interaction => {
 		case 'ping':
 			await interaction.reply('Pong!');
 			break;
-		case 'profile':
+		case 'test':
 			{
-				const modal = new ModalBuilder()
-					.setTitle('Title')
-					.setCustomId('profile');
-				const name = new TextInputBuilder()
-					.setCustomId('name')
-					.setRequired(true)
-					.setLabel('Enter name')
-					.setStyle(TextInputStyle.Short);
-				const about = new TextInputBuilder()
-					.setCustomId('about')
-					.setRequired(true)
-					.setLabel('Write about you')
-					.setStyle(TextInputStyle.Paragraph);
-				const firstActionRow = new ActionRowBuilder().addComponents(name);
-				const secondActionRow = new ActionRowBuilder().addComponents(about);
-				modal.addComponents(firstActionRow, secondActionRow);
-				await interaction.showModal(modal);
+                const allowedRoles = ['1084443143807717447'];
+                if (allowedRoles.some(role => !!interaction.member.roles.resolve(role))) {
+                    // роль есть
+                    await interaction.reply('💥');
+                } else {
+                    // роли нету
+                    await interaction.reply('Привет😊');
+                }
 			}
 			break;
 		case 'publishcode':
-			{
-				const modal = new ModalBuilder()
-					.setCustomId('publishCode')
-					.setTitle('Публікація корисного коду');
-				const embedColorInput = new TextInputBuilder()
-					.setCustomId('embedColorInput')
-					.setLabel('Введіть колір ембеду в формати RRGGBB')
-					.setMinLength(6)
-					.setMaxLength(6)
-					.setStyle(TextInputStyle.Short);
-				const embedCodeTypeInput = new TextInputBuilder()
-					.setCustomId('embedCodeTypeInput')
-					.setLabel('Введіть тип код')
-					.setMaxLength(4)
-					.setStyle(TextInputStyle.Short);
-				const embedTitleInput = new TextInputBuilder()
-					.setCustomId('embedTitleInput')
-					.setLabel('Введіть заголовок')
-					.setStyle(TextInputStyle.Short);
-				const embedDescriptionInput = new TextInputBuilder()
-					.setCustomId('embedDescriptionInput')
-					.setLabel('Введіть код')
-					.setStyle(TextInputStyle.Paragraph);
-				const embedFooterInput = new TextInputBuilder()
-					.setCustomId('embedFooterInput')
-					.setLabel('Введіть теги')
-					.setStyle(TextInputStyle.Short);
-				const firstRow = new ActionRowBuilder().addComponents(embedColorInput);
-				const secondRow = new ActionRowBuilder().addComponents(embedCodeTypeInput);
-				const thirdRow = new ActionRowBuilder().addComponents(embedTitleInput);
-	    		const fourthRow = new ActionRowBuilder().addComponents(embedDescriptionInput);
-				const fifthRow = new ActionRowBuilder().addComponents(embedFooterInput);
-				modal.addComponents(firstRow, secondRow, thirdRow, fourthRow, fifthRow);
-				await interaction.showModal(modal);
+			{   
+                const allowedRoles = process.env.GUILD_USEFUL_CODE_ACCESS_ROLE_ID.split(',')
+                if (allowedRoles.some(role => !!interaction.member.roles.resolve(role))) {
+                    const modal = new ModalBuilder()
+                        .setCustomId('publishCode')
+                        .setTitle('Публікація корисного коду');
+                    const embedColorInput = new TextInputBuilder()
+                        .setCustomId('embedColorInput')
+                        .setLabel('Введіть колір ембеду в форматі RRGGBB')
+                        .setMinLength(6)
+                        .setMaxLength(6)
+                        .setStyle(TextInputStyle.Short);
+                    const embedCodeTypeInput = new TextInputBuilder()
+                        .setCustomId('embedCodeTypeInput')
+                        .setLabel('Введіть тип код. Наприклад js, py, cpp, c')
+                        .setMaxLength(4)
+                        .setStyle(TextInputStyle.Short);
+                    const embedTitleInput = new TextInputBuilder()
+                        .setCustomId('embedTitleInput')
+                        .setLabel('Введіть заголовок')
+                        .setStyle(TextInputStyle.Short);
+                    const embedDescriptionInput = new TextInputBuilder()
+                        .setCustomId('embedDescriptionInput')
+                        .setLabel('Введіть код')
+                        .setStyle(TextInputStyle.Paragraph);
+                    const embedFooterInput = new TextInputBuilder()
+                        .setCustomId('embedFooterInput')
+                        .setLabel('Введіть теги. Наприклад #javascript #pyhon')
+                        .setStyle(TextInputStyle.Short);
+                    const firstRow = new ActionRowBuilder().addComponents(embedColorInput);
+                    const secondRow = new ActionRowBuilder().addComponents(embedCodeTypeInput);
+                    const thirdRow = new ActionRowBuilder().addComponents(embedTitleInput);
+                    const fourthRow = new ActionRowBuilder().addComponents(embedDescriptionInput);
+                    const fifthRow = new ActionRowBuilder().addComponents(embedFooterInput);
+                    modal.addComponents(firstRow, secondRow, thirdRow, fourthRow, fifthRow);
+                    await interaction.showModal(modal);
+                } else {
+                    await interaction.reply({ content: '⛔ Access Denied', ephemeral: true})
+                }
 			}
 			break;
 	}
@@ -92,7 +89,7 @@ client.on(Events.InteractionCreate, async interaction => {
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isModalSubmit()) return;
 	switch (interaction.customId) {
-		case 'profile':
+		case 'test':
 			await interaction.reply({
 				content: `Username: ${interaction.fields.getTextInputValue('name')}, About: ${interaction.fields.getTextInputValue('about')}`
 			});
@@ -102,7 +99,9 @@ client.on(Events.InteractionCreate, async interaction => {
 				const codeDescription = interaction.fields.getTextInputValue('embedDescriptionInput')
 				const codeType = interaction.fields.getTextInputValue('embedCodeTypeInput')
 				const publishCodeEmbed = new EmbedBuilder()
-					.setAuthor({ name: interaction.user.username, iconURL: 'https://i.imgur.com/AfFp7pu.png', url: 'https://discord.js.org' })
+					.setAuthor({ name: interaction.user.username,
+                        iconURL: `https://cdn.discordapp.com/avatars/${interaction.user.id}/${interaction.user.avatar}`,
+                        url: `https://discord.com/users/${interaction.user.id}` })
 					.setColor(Number('0x' + interaction.fields.getTextInputValue('embedColorInput')))
 					.setTitle(interaction.fields.getTextInputValue('embedTitleInput'))
 					.setDescription(`\`\`\`${codeType}\n${codeDescription}\n\`\`\``)
@@ -118,11 +117,12 @@ client.on(Events.InteractionCreate, async interaction => {
 					embeds: [
 						publishCodeEmbed
 					],
-				});
-				await interaction.reply({
-					content: '✅ Успіх',
-					ephemeral: true,
-				});
+				}).then(function(apiMessage) {
+                    const message = new Message(interaction.client, apiMessage);
+                    message.react('👍');
+                    message.react('👎');
+                });
+				await interaction.reply({ content: '✅ Пост успішно відправлено!', ephemeral: true });
 			}
 			break;
 		default:
