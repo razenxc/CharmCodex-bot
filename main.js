@@ -1,4 +1,4 @@
-const onetwothree = require('./123.js')
+require('./123.js').start();
 require('dotenv').config();
 
 const { EmbedBuilder } = require('@discordjs/builders');
