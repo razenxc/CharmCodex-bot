@@ -1,7 +1,6 @@
 .old_construct
 node_modules
 .env
-config.json
 123.js
 .replit
 replit.nix
