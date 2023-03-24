@@ -16,6 +16,7 @@ events_list = [
 
 commands_list = [
     'ping',
+    'publishcode'
 ]
 
 for cog in events_list:
