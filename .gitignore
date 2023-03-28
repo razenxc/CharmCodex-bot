@@ -4,3 +4,5 @@ commands/__pycache__
 .replit
 replit.nix
 123.py
+start.bat
+start.sh

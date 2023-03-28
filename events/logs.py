@@ -15,14 +15,24 @@ class moderationLogs(commands.Cog):
         self.bot = bot
     
     @commands.Cog.listener()
-    async def on_member_ban(self, member):
+    async def on_member_ban(self, guild, member):
         channel = self.bot.get_channel(1087424762885722192)
-        await channel.send(f'Участника undefined було заблоковано...')
+        embed = discord.Embed(
+            color=0xff0000,
+            title='Ban',
+            description=f'Учасника {member.mention} було заблоковано на сервері!\nДетальна інформація нижче.\n**Про заблокованого учасника:**\n**Id** - {member.id}, **Name** - {member.name}#{member.discriminator}.\n**Детальна інформація про модератора:**\n**CHANGE ME**',
+        )
+        await channel.send(embeds=[embed])
 
     @commands.Cog.listener()
-    async def on_member_unban(self, member):
+    async def on_member_unban(self, guild, member):
         channel = self.bot.get_channel(1087424762885722192)
-        await channel.send(f'Участника undefined було разблоковано...')
+        embed = discord.Embed(
+            color=0x7CFC00,
+            title='Unban',
+            description=f'Учасника {member.mention} було разблоковано на сервері!\nДетальна інформація нижче.\n**Про разблокованого учасника:**\n**Id** - {member.id}, **Name** - {member.name}#{member.discriminator}.\n**Детальна інформація про модератора:**\n',
+        )
+        await channel.send(embeds=[embed])
 
 def setup(bot):
     bot.add_cog(departedUsers(bot))
