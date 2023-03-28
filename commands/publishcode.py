@@ -76,7 +76,7 @@ class PublishCodeModal(disnake.ui.Modal):
             icon_url=interaction.user.display_avatar,
         )
         async with aiohttp.ClientSession() as session:
-            url = f"https://discord.com/api/webhooks/{os.getenv('WEBHOOK_ID')}/{os.getenv('WEBHOOK_TOKEN')}"
+            url = f"https://discord.com/api/webhooks/{os.getenv('PUBLISHCODE_WEBHOOK_ID')}/{os.getenv('PUBLISHCODE_WEBHOOK_TOKEN')}"
             webhook = disnake.Webhook.from_url(
                 url=url,
                 session=session,
