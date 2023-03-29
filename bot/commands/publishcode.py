@@ -81,7 +81,7 @@ class PublishCodeModal(disnake.ui.Modal):
                     f"/{os.getenv('PUBLISHCODE_WEBHOOK_TOKEN')}"),
                 session=session,
             )
-            interaction.defer()
+            await interaction.response.defer()
             message = interaction.client.get_message(
                 (await webhook.send(
                     embeds=[
@@ -92,7 +92,7 @@ class PublishCodeModal(disnake.ui.Modal):
             )
             await message.add_reaction('👍')
             await message.add_reaction('👎')
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 content="✅ Успішно надіслано код!",
                 ephemeral=True,
             )
