@@ -81,6 +81,7 @@ class PublishCodeModal(disnake.ui.Modal):
                     f"/{os.getenv('PUBLISHCODE_WEBHOOK_TOKEN')}"),
                 session=session,
             )
+            interaction.defer()
             message = interaction.client.get_message(
                 (await webhook.send(
                     embeds=[
