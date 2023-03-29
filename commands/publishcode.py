@@ -77,8 +77,8 @@ class PublishCodeModal(disnake.ui.Modal):
         async with aiohttp.ClientSession() as session:
             webhook = disnake.Webhook.from_url(
                 url=("https://discord.com/api/webhooks"
-                    f"/{os.getenv('PUBLISH_WEBHOOK_ID')}"
-                    f"/{os.getenv('PUBLISH_WEBHOOK_TOKEN')}"),
+                    f"/{os.getenv('PUBLISHCODE_WEBHOOK_ID')}"
+                    f"/{os.getenv('PUBLISHCODE_WEBHOOK_TOKEN')}"),
                 session=session,
             )
             await webhook.send(
@@ -100,7 +100,7 @@ class PublishingUsefulCodes(commands.Cog):
         publish_roles = list(
             map(
                 int,
-                os.getenv('PUBLISH_ROLES').split(',')
+                os.getenv('PUBLISHCODE_ROLES').split(',')
             )
         )
         return any(
