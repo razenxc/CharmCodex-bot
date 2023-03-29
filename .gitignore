@@ -1,6 +1,7 @@
 .env
-events/__pycache__
-commands/__pycache__
+__pycache__/
+*.py[cod]
+*$py.class
 .replit
 replit.nix
 123.py
