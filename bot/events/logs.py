@@ -10,7 +10,7 @@ class DepartedUsers(commands.Cog):
         self,
         member: disnake.Member,
     ) -> None:
-        channel = self.bot.get_channel(1087415810445815880)
+        channel = self.bot.get_channel(1080494821950636043)
         await channel.send(
             f"Чмо {member.mention}, покинуло сервер. ("
             f"id: {member.id}, tag: {member.name}#{member.discriminator}"

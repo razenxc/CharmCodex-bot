@@ -52,7 +52,7 @@ class PublishCodeModal(disnake.ui.Modal):
             ),
         ]
         super().__init__(
-            title="Modal via Slash command",
+            title="Опубліковати код до #useful-codes",
             custom_id="publishcode",
             components=components,
         )
@@ -117,7 +117,7 @@ class PublishingUsefulCodes(commands.Cog):
     async def publishcode(self, inner: ACI):
         if not self.can_publish(inner.author):
             await inner.response.send_message(
-                content="❌ Access denied",
+                content="❌ Відмовлено у доступі!",
                 ephemeral=True,
             )
             return
