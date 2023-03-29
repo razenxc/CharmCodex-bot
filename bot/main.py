@@ -1,4 +1,3 @@
-from verysecretfile import one
 import disnake
 from disnake.ext import commands
 

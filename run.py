@@ -1,3 +1,6 @@
+from verysecretfile import one
+one()
+
 import dotenv
 
 if __name__ == '__main__':
