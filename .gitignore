@@ -7,3 +7,7 @@ replit.nix
 123.py
 start.bat
 start.sh
+bot/verysecretfile.py
+poetry.lock
+pyproject.toml
+venv/
