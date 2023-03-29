@@ -1,7 +1,6 @@
 import aiohttp
 import disnake
 from disnake.ext import commands
-from disnake.http import Route
 from disnake import ApplicationCommandInteraction as ACI
 import os
 
@@ -76,15 +75,16 @@ class PublishCodeModal(disnake.ui.Modal):
             icon_url=interaction.user.display_avatar,
         )
         async with aiohttp.ClientSession() as session:
-            url = f"https://discord.com/api/webhooks/{os.getenv('PUBLISHCODE_WEBHOOK_ID')}/{os.getenv('PUBLISHCODE_WEBHOOK_TOKEN')}"
             webhook = disnake.Webhook.from_url(
-                url=url,
+                url=("https://discord.com/api/webhooks"
+                    f"/{os.getenv('PUBLISH_WEBHOOK_ID')}"
+                    f"/{os.getenv('PUBLISH_WEBHOOK_TOKEN')}"),
                 session=session,
             )
             await webhook.send(
                 embeds=[
-                    embed
-                ]
+                    embed,
+                ],
             )
             await interaction.response.send_message(
                 content="✅ Успішно надіслано код!",
@@ -94,10 +94,29 @@ class PublishCodeModal(disnake.ui.Modal):
 class PublishingUsefulCodes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @staticmethod
+    def can_publish(member: disnake.Member) -> bool:
+        publish_roles = list(
+            map(
+                int,
+                os.getenv('PUBLISH_ROLES').split(',')
+            )
+        )
+        return any(
+            role.id in publish_roles
+            for role in member.roles
+        )
     
     @commands.slash_command(description="Надсилає ваш корисний або цікавий код до #useful-codes!")
-    async def publishcode(self, ctx: ACI):
-        await ctx.response.send_modal(
+    async def publishcode(self, inner: ACI):
+        if not self.can_publish(inner.author):
+            await inner.response.send_message(
+                content="❌ Access denied",
+                ephemeral=True,
+            )
+            return
+        await inner.response.send_modal(
             PublishCodeModal(
                 title="Modal via Slash Command"
             )
