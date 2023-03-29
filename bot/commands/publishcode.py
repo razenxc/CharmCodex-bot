@@ -52,7 +52,7 @@ class PublishCodeModal(disnake.ui.Modal):
             ),
         ]
         super().__init__(
-            title="Опубліковати код до #useful-codes",
+            title="Публікація коду до #useful-codes",
             custom_id="publishcode",
             components=components,
         )
@@ -124,7 +124,7 @@ class PublishingUsefulCodes(commands.Cog):
             return
         await inner.response.send_modal(
             PublishCodeModal(
-                title="Modal via Slash Command"
+                title="Публікація коду до #useful-codes"
             )
         ) 
 
