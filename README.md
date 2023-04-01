@@ -1,7 +1,7 @@
 
-# **ITechAvenue-bot**
+# **CharmCodex-bot**
 
-This is a Discord Bot built using disnake library. This bot is specially made for Discord server ITechAvenue
+This is a Discord Bot built using disnake library. This bot is specially made for Discord server CharmCodex
 
 ## Getting Started
 
