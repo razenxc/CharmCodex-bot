@@ -8,7 +8,7 @@ class Ping(commands.Cog):
     @commands.slash_command(description="Надсилає затримку бота.")
     async def ping(self, ctx):
         await ctx.response.send_message(
-            f"Pong! Затримка {str(self.bot.latency)[:4]}s."
+            f"Pong! Затримка {round(self.bot.latency * 1000)}ms.")
         )
 
 def setup(bot):
